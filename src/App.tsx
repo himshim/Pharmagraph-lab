@@ -35,7 +35,7 @@ export default function App() {
     method: "Method-001",
     sampleId: "S-001",
     analyst: "",
-    date: new Date().toLocaleString(),
+    date: new Date().toLocaleString(), // now editable below
   });
 
   // Page theme (UI only)
@@ -44,10 +44,20 @@ export default function App() {
     return saved ?? "system";
   });
 
-  // NEW: Aspect ratio (affects preview height and PNG export area)
+  // Aspect ratio (affects preview + PNG)
   const [aspectRatio, setAspectRatio] = useState<string>("auto");
 
-  const chartRef = useRef<HTMLDivElement>(null);
+  // NEW: Export/display toggles
+  const [includeTitle, setIncludeTitle] = useState(true);
+  const [includeInstrument, setIncludeInstrument] = useState(true);
+  const [includeMethod, setIncludeMethod] = useState(true);
+  const [includeSampleId, setIncludeSampleId] = useState(true);
+  const [includeAnalyst, setIncludeAnalyst] = useState(true);
+  const [includeDate, setIncludeDate] = useState(true);
+
+  // Export ref now points to the WHOLE card (title + metadata + chart)
+  const exportRef = useRef<HTMLDivElement>(null);
+
   const sorted = useMemo(() => [...data].sort((a, b) => a.x - b.x), [data]);
 
   useEffect(() => {
@@ -165,6 +175,15 @@ export default function App() {
                     onChange={(e) => setMeta({ ...meta, analyst: e.target.value })}
                   />
                 </label>
+                <label className="flex flex-col col-span-2">
+                  Date
+                  <input
+                    className="mt-1 p-2 border rounded bg-transparent"
+                    value={meta.date}
+                    onChange={(e) => setMeta({ ...meta, date: e.target.value })}
+                    placeholder="e.g., 2025-08-25 14:05"
+                  />
+                </label>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <button className="btn btn-outline" onClick={() => loadPreset("hplc")}>
@@ -180,6 +199,40 @@ export default function App() {
                   Dissolution Profile
                 </button>
               </div>
+            </div>
+
+            {/* NEW: Export display toggles */}
+            <div className="panel space-y-2 p-4">
+              <h3 className="heading">Export Display</h3>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" checked={includeTitle} onChange={(e) => setIncludeTitle(e.target.checked)} />
+                Include Title
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={includeInstrument} onChange={(e) => setIncludeInstrument(e.target.checked)} />
+                  Instrument
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={includeMethod} onChange={(e) => setIncludeMethod(e.target.checked)} />
+                  Method
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={includeSampleId} onChange={(e) => setIncludeSampleId(e.target.checked)} />
+                  Sample ID
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={includeAnalyst} onChange={(e) => setIncludeAnalyst(e.target.checked)} />
+                  Analyst
+                </label>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={includeDate} onChange={(e) => setIncludeDate(e.target.checked)} />
+                  Date
+                </label>
+              </div>
+              <p className="text-xs opacity-70">
+                These options control what appears above the chart and in the exported PNG.
+              </p>
             </div>
 
             {/* Data entry */}
@@ -213,7 +266,7 @@ export default function App() {
               <div className="flex gap-2">
                 <button
                   className="btn btn-primary"
-                  onClick={() => exportNodePNG(chartRef.current!, `${title.replace(/\s+/g, "_")}.png`)}
+                  onClick={() => exportNodePNG(exportRef.current!, `${title.replace(/\s+/g, "_")}.png`)}
                 >
                   Export PNG
                 </button>
@@ -225,14 +278,20 @@ export default function App() {
               xLabel={xLabel}
               yLabel={yLabel}
               title={title}
-              meta={{ ...meta, date: new Date().toLocaleString() }}
+              meta={meta}                        {/* keep user-edited date */}
               chartType={chartType}
               skin={skin}
               showLegend={showLegend}
               showRefLine={showRefLine}
               refY={refY}
-              containerRef={chartRef}
+              exportRef={exportRef}             {/* capture whole card */}
               aspectRatio={aspectRatio}
+              includeTitle={includeTitle}
+              includeInstrument={includeInstrument}
+              includeMethod={includeMethod}
+              includeSampleId={includeSampleId}
+              includeAnalyst={includeAnalyst}
+              includeDate={includeDate}
             />
 
             <div className="text-xs opacity-70 p-2 text-center">
