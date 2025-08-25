@@ -21,7 +21,8 @@ export default function App() {
     { x: 1, y: 1 },
     { x: 2, y: 4 },
   ]);
-  const [chartType, setChartType] = useState<"line" | "area" | "bar" | "scatter">("line");
+  const [chartType, setChartType] =
+    useState<"line" | "area" | "bar" | "scatter">("line");
   const [xLabel, setXLabel] = useState("X");
   const [yLabel, setYLabel] = useState("Y");
   const [title, setTitle] = useState("Mock Instrument Report");
@@ -133,7 +134,9 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.instrument}
-                    onChange={(e) => setMeta({ ...meta, instrument: e.target.value })}
+                    onChange={(e) =>
+                      setMeta({ ...meta, instrument: e.target.value })
+                    }
                   />
                 </label>
                 <label className="flex flex-col">
@@ -141,7 +144,9 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.method}
-                    onChange={(e) => setMeta({ ...meta, method: e.target.value })}
+                    onChange={(e) =>
+                      setMeta({ ...meta, method: e.target.value })
+                    }
                   />
                 </label>
                 <label className="flex flex-col">
@@ -149,7 +154,9 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.sampleId}
-                    onChange={(e) => setMeta({ ...meta, sampleId: e.target.value })}
+                    onChange={(e) =>
+                      setMeta({ ...meta, sampleId: e.target.value })
+                    }
                   />
                 </label>
                 <label className="flex flex-col">
@@ -157,7 +164,9 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.analyst}
-                    onChange={(e) => setMeta({ ...meta, analyst: e.target.value })}
+                    onChange={(e) =>
+                      setMeta({ ...meta, analyst: e.target.value })
+                    }
                   />
                 </label>
               </div>
@@ -243,8 +252,7 @@ export default function App() {
             </div>
           </motion.div>
         </div>
-      </div>
-    </main>
-  </div>
+      </main>
+    </div>
   );
 }
