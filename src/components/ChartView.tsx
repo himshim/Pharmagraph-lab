@@ -34,7 +34,6 @@ type Props = {
   showRefLine: boolean;
   refY: number;
   containerRef: React.RefObject<HTMLDivElement>;
-  // NEW:
   aspectRatio?: string; // "auto" | "16:9" | "4:3" | "1:1" | "3:2"
 };
 
@@ -49,33 +48,25 @@ export default function ChartView(props: Props) {
   const S = SKINS[skin];
   const ratio = parseRatio(aspectRatio);
 
-  const commonAxes = (
-    <>
-      <XAxis
-        dataKey="x"
-        label={{ value: xLabel, position: "insideBottom", offset: -5 }}
-        tick={{ fontSize: S.tick }}
-      />
-      {"y" in ({} as any) && ( // silly no-op to avoid JSX formatting issues
-        <YAxis
-          label={{ value: yLabel, angle: -90, position: "insideLeft" }}
-          tick={{ fontSize: S.tick }}
-        />
-      )}
-      <Tooltip />
-      {showLegend && <Legend />}
-      {showRefLine && <ReferenceLine y={refY} strokeDasharray="6 3" />}
-    </>
-  );
+  const margin = { top: 10, right: 25, left: 10, bottom: 10 };
 
   const chartEl = useMemo(() => {
-    const margin = { top: 10, right: 25, left: 10, bottom: 10 };
-
     if (chartType === "line") {
       return (
         <LineChart data={sorted} margin={margin}>
           {S.grid && <CartesianGrid strokeDasharray="3 3" />}
-          {commonAxes}
+          <XAxis
+            dataKey="x"
+            label={{ value: xLabel, position: "insideBottom", offset: -5 }}
+            tick={{ fontSize: S.tick }}
+          />
+          <YAxis
+            label={{ value: yLabel, angle: -90, position: "insideLeft" }}
+            tick={{ fontSize: S.tick }}
+          />
+          <Tooltip />
+          {showLegend && <Legend />}
+          {showRefLine && <ReferenceLine y={refY} strokeDasharray="6 3" />}
           <Line type="monotone" dataKey="y" dot={false} strokeWidth={2} />
         </LineChart>
       );
@@ -85,7 +76,18 @@ export default function ChartView(props: Props) {
       return (
         <AreaChart data={sorted} margin={margin}>
           {S.grid && <CartesianGrid strokeDasharray="3 3" />}
-          {commonAxes}
+          <XAxis
+            dataKey="x"
+            label={{ value: xLabel, position: "insideBottom", offset: -5 }}
+            tick={{ fontSize: S.tick }}
+          />
+          <YAxis
+            label={{ value: yLabel, angle: -90, position: "insideLeft" }}
+            tick={{ fontSize: S.tick }}
+          />
+          <Tooltip />
+          {showLegend && <Legend />}
+          {showRefLine && <ReferenceLine y={refY} strokeDasharray="6 3" />}
           <Area type="monotone" dataKey="y" strokeWidth={2} fillOpacity={0.2} />
         </AreaChart>
       );
@@ -95,12 +97,24 @@ export default function ChartView(props: Props) {
       return (
         <BarChart data={sorted} margin={margin}>
           {S.grid && <CartesianGrid strokeDasharray="3 3" />}
-          {commonAxes}
+          <XAxis
+            dataKey="x"
+            label={{ value: xLabel, position: "insideBottom", offset: -5 }}
+            tick={{ fontSize: S.tick }}
+          />
+          <YAxis
+            label={{ value: yLabel, angle: -90, position: "insideLeft" }}
+            tick={{ fontSize: S.tick }}
+          />
+          <Tooltip />
+          {showLegend && <Legend />}
+          {showRefLine && <ReferenceLine y={refY} strokeDasharray="6 3" />}
           <Bar dataKey="y" />
         </BarChart>
       );
     }
 
+    // scatter
     return (
       <ScatterChart margin={margin}>
         {S.grid && <CartesianGrid strokeDasharray="3 3" />}
@@ -138,7 +152,6 @@ export default function ChartView(props: Props) {
       {/* Chart area: fixed ratio when selected, else responsive heights */}
       <div className="mt-3">
         {ratio ? (
-          // Fixed aspect ratio wrapper (width:100%, height determined by paddingTop)
           <div style={{ position: "relative", width: "100%", paddingTop: `${100 / ratio}%` }}>
             <div ref={containerRef} style={{ position: "absolute", inset: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -147,7 +160,6 @@ export default function ChartView(props: Props) {
             </div>
           </div>
         ) : (
-          // Auto (original responsive heights)
           <div className="h-[320px] sm:h-[420px] md:h-[520px]" ref={containerRef}>
             <ResponsiveContainer width="100%" height="100%">
               {chartEl}
