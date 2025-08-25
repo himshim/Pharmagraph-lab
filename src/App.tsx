@@ -35,19 +35,16 @@ export default function App() {
     method: "Method-001",
     sampleId: "S-001",
     analyst: "",
-    date: new Date().toLocaleString(), // now editable below
+    date: new Date().toLocaleString(),
   });
 
-  // Page theme (UI only)
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("pharmagraph-theme") as Theme | null;
     return saved ?? "system";
   });
 
-  // Aspect ratio (affects preview + PNG)
   const [aspectRatio, setAspectRatio] = useState<string>("auto");
 
-  // NEW: Export/display toggles
   const [includeTitle, setIncludeTitle] = useState(true);
   const [includeInstrument, setIncludeInstrument] = useState(true);
   const [includeMethod, setIncludeMethod] = useState(true);
@@ -55,7 +52,6 @@ export default function App() {
   const [includeAnalyst, setIncludeAnalyst] = useState(true);
   const [includeDate, setIncludeDate] = useState(true);
 
-  // Export ref now points to the WHOLE card (title + metadata + chart)
   const exportRef = useRef<HTMLDivElement>(null);
 
   const sorted = useMemo(() => [...data].sort((a, b) => a.x - b.x), [data]);
@@ -201,7 +197,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* NEW: Export display toggles */}
+            {/* Export display toggles */}
             <div className="panel space-y-2 p-4">
               <h3 className="heading">Export Display</h3>
               <label className="flex items-center gap-2">
@@ -278,13 +274,13 @@ export default function App() {
               xLabel={xLabel}
               yLabel={yLabel}
               title={title}
-              meta={meta}                        {/* keep user-edited date */}
+              meta={meta}
               chartType={chartType}
               skin={skin}
               showLegend={showLegend}
               showRefLine={showRefLine}
               refY={refY}
-              exportRef={exportRef}             {/* capture whole card */}
+              exportRef={exportRef}
               aspectRatio={aspectRatio}
               includeTitle={includeTitle}
               includeInstrument={includeInstrument}
