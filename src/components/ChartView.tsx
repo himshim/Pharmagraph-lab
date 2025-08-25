@@ -22,32 +22,52 @@ function parseRatio(r: string): number | null {
   return w / h;
 }
 
+type Meta = {
+  instrument: string;
+  method: string;
+  sampleId: string;
+  analyst: string;
+  date: string;
+};
+
 type Props = {
   data: XY[];
   xLabel: string;
   yLabel: string;
   title: string;
-  meta: { instrument: string; method: string; sampleId: string; analyst: string; date: string };
+  meta: Meta;
   chartType: "line" | "area" | "bar" | "scatter";
   skin: keyof typeof SKINS;
   showLegend: boolean;
   showRefLine: boolean;
   refY: number;
-  containerRef: React.RefObject<HTMLDivElement>;
+
+  // wrapper ref used for PNG export (captures whole card)
+  exportRef: React.RefObject<HTMLDivElement>;
+
+  // Layout
   aspectRatio?: string; // "auto" | "16:9" | "4:3" | "1:1" | "3:2"
+
+  // NEW: Export/Display toggles
+  includeTitle: boolean;
+  includeInstrument: boolean;
+  includeMethod: boolean;
+  includeSampleId: boolean;
+  includeAnalyst: boolean;
+  includeDate: boolean;
 };
 
 export default function ChartView(props: Props) {
   const {
     data, xLabel, yLabel, title, meta,
     chartType, skin, showLegend, showRefLine, refY,
-    containerRef, aspectRatio = "auto"
+    exportRef, aspectRatio = "auto",
+    includeTitle, includeInstrument, includeMethod, includeSampleId, includeAnalyst, includeDate,
   } = props;
 
   const sorted = useMemo(() => [...data].sort((a, b) => a.x - b.x), [data]);
   const S = SKINS[skin];
   const ratio = parseRatio(aspectRatio);
-
   const margin = { top: 10, right: 25, left: 10, bottom: 10 };
 
   const chartEl = useMemo(() => {
@@ -136,31 +156,42 @@ export default function ChartView(props: Props) {
     );
   }, [chartType, sorted, S.grid, S.tick, xLabel, yLabel, showLegend, showRefLine, refY]);
 
+  // Build the metadata line based on toggles
+  const metaItems: string[] = [];
+  if (includeInstrument && meta.instrument) metaItems.push(`Instrument: ${meta.instrument}`);
+  if (includeMethod && meta.method) metaItems.push(`Method: ${meta.method}`);
+  if (includeSampleId && meta.sampleId) metaItems.push(`Sample ID: ${meta.sampleId}`);
+  if (includeAnalyst && meta.analyst) metaItems.push(`Analyst: ${meta.analyst}`);
+  if (includeDate && meta.date) metaItems.push(`Date: ${meta.date}`);
+
   return (
-    <div className={`${S.bg} ${S.text} rounded-2xl shadow-xl ${S.border} p-4 w-full`}>
+    <div ref={exportRef} className={`${S.bg} ${S.text} rounded-2xl shadow-xl ${S.border} p-4 w-full`}>
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <div className="text-lg md:text-xl font-semibold">{title}</div>
-        <div className="text-xs md:text-sm opacity-80">
-          <span className="mr-3">Instrument: {meta.instrument}</span>
-          <span className="mr-3">Method: {meta.method}</span>
-          <span className="mr-3">Sample ID: {meta.sampleId}</span>
-          <span>Date: {meta.date}</span>
-        </div>
+        {includeTitle ? (
+          <div className="text-lg md:text-xl font-semibold">{title}</div>
+        ) : <div />}
+        {metaItems.length > 0 && (
+          <div className="text-xs md:text-sm opacity-80">
+            {metaItems.map((t, i) => (
+              <span key={i} className={i < metaItems.length - 1 ? "mr-3" : ""}>{t}</span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Chart area: fixed ratio when selected, else responsive heights */}
       <div className="mt-3">
         {ratio ? (
           <div style={{ position: "relative", width: "100%", paddingTop: `${100 / ratio}%` }}>
-            <div ref={containerRef} style={{ position: "absolute", inset: 0 }}>
+            <div style={{ position: "absolute", inset: 0 }}>
               <ResponsiveContainer width="100%" height="100%">
                 {chartEl}
               </ResponsiveContainer>
             </div>
           </div>
         ) : (
-          <div className="h-[320px] sm:h-[420px] md:h-[520px]" ref={containerRef}>
+          <div className="h-[320px] sm:h-[420px] md:h-[520px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartEl}
             </ResponsiveContainer>
