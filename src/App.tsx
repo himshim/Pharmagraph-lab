@@ -200,13 +200,22 @@ export default function App() {
         </div>
 
         {/* Right chart */}
-        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-8 space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-8 space-y-4"
+        >
           <div className="panel p-4 flex items-center justify-between">
             <h3 className="heading">Preview & Export</h3>
             <div className="flex gap-2">
               <button
                 className="btn btn-primary"
-                onClick={() => exportNodePNG(chartRef.current!, `${title.replace(/\s+/g, "_")}.png`)}
+                onClick={() =>
+                  exportNodePNG(
+                    chartRef.current!,
+                    `${title.replace(/\s+/g, "_")}.png`
+                  )
+                }
               >
                 Export PNG
               </button>
@@ -220,14 +229,16 @@ export default function App() {
             title={title}
             meta={{ ...meta, date: new Date().toLocaleString() }}
             chartType={chartType}
-            skin={skin}                {/* chart skin stays independent */}
+            skin={skin}
             showLegend={showLegend}
             showRefLine={showRefLine}
             refY={refY}
             containerRef={chartRef}
           />
 
-          <div className="text-xs opacity-70 p-2 text-center">Responsive • Desktop & Mobile • Open Source</div>
+          <div className="text-xs opacity-70 p-2 text-center">
+            Responsive • Desktop & Mobile • Open Source
+          </div>
         </motion.div>
       </div>
     </div>
