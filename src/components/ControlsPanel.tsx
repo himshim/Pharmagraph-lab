@@ -18,6 +18,10 @@ type Props = {
   setShowRefLine: (v: boolean) => void;
   refY: number;
   setRefY: (n: number) => void;
+
+  // NEW: aspect ratio control
+  aspectRatio: string; // "auto" | "16:9" | "4:3" | "1:1" | "3:2"
+  setAspectRatio: (v: string) => void;
 };
 
 export default function ControlsPanel(props: Props) {
@@ -38,12 +42,14 @@ export default function ControlsPanel(props: Props) {
     setShowRefLine,
     refY,
     setRefY,
+    aspectRatio,
+    setAspectRatio,
   } = props;
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-      <div className="p-4 rounded-2xl bg-white shadow border">
-        <h3 className="font-semibold text-lg">Configure</h3>
+      <div className="panel p-4">
+        <h3 className="heading">Configure</h3>
         <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
           <label className="flex flex-col">Chart Type
             <select className="mt-1 p-2 border rounded" value={chartType} onChange={(e) => setChartType(e.target.value)}>
@@ -53,6 +59,7 @@ export default function ControlsPanel(props: Props) {
               <option value="scatter">Scatter</option>
             </select>
           </label>
+
           <label className="flex flex-col">Skin
             <select className="mt-1 p-2 border rounded" value={skin} onChange={(e) => setSkin(e.target.value)}>
               <option value="classic">Classic</option>
@@ -60,26 +67,52 @@ export default function ControlsPanel(props: Props) {
               <option value="minimal">Minimal</option>
             </select>
           </label>
+
           <label className="flex flex-col">X-axis Label
             <input className="mt-1 p-2 border rounded" value={xLabel} onChange={(e) => setXLabel(e.target.value)} />
           </label>
+
           <label className="flex flex-col">Y-axis Label
             <input className="mt-1 p-2 border rounded" value={yLabel} onChange={(e) => setYLabel(e.target.value)} />
           </label>
+
           <label className="flex flex-col col-span-2">Report Title
             <input className="mt-1 p-2 border rounded" value={title} onChange={(e) => setTitle(e.target.value)} />
           </label>
-        </div>
-        <div className="grid grid-cols-2 gap-3 mt-3 text-sm">
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={showLegend} onChange={(e) => setShowLegend(e.target.checked)} /> Show Legend
+
+          <label className="flex flex-col">Aspect Ratio
+            <select
+              className="mt-1 p-2 border rounded"
+              value={aspectRatio}
+              onChange={(e) => setAspectRatio(e.target.value)}
+              title="Fix the preview/export aspect ratio"
+            >
+              <option value="auto">Auto (responsive)</option>
+              <option value="16:9">16:9 (widescreen)</option>
+              <option value="4:3">4:3 (classic)</option>
+              <option value="1:1">1:1 (square)</option>
+              <option value="3:2">3:2</option>
+            </select>
           </label>
-          <label className="flex items-center gap-2">
-            <input type="checkbox" checked={showRefLine} onChange={(e) => setShowRefLine(e.target.checked)} /> Reference Line
-          </label>
+
+          <div className="flex items-center gap-2">
+            <input type="checkbox" checked={showLegend} onChange={(e) => setShowLegend(e.target.checked)} />
+            <span>Show Legend</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input type="checkbox" checked={showRefLine} onChange={(e) => setShowRefLine(e.target.checked)} />
+            <span>Reference Line</span>
+          </div>
+
           {showRefLine && (
             <label className="flex flex-col col-span-2">Ref Y value
-              <input type="number" className="mt-1 p-2 border rounded" value={refY} onChange={(e) => setRefY(Number(e.target.value))} />
+              <input
+                type="number"
+                className="mt-1 p-2 border rounded"
+                value={refY}
+                onChange={(e) => setRefY(Number(e.target.value))}
+              />
             </label>
           )}
         </div>
