@@ -21,8 +21,7 @@ export default function App() {
     { x: 1, y: 1 },
     { x: 2, y: 4 },
   ]);
-  const [chartType, setChartType] =
-    useState<"line" | "area" | "bar" | "scatter">("line");
+  const [chartType, setChartType] = useState<"line" | "area" | "bar" | "scatter">("line");
   const [xLabel, setXLabel] = useState("X");
   const [yLabel, setYLabel] = useState("Y");
   const [title, setTitle] = useState("Mock Instrument Report");
@@ -39,11 +38,14 @@ export default function App() {
     date: new Date().toLocaleString(),
   });
 
-  // Page theme (UI only; graphs keep their own skins/colors)
+  // Page theme (UI only)
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("pharmagraph-theme") as Theme | null;
     return saved ?? "system";
   });
+
+  // NEW: Aspect ratio (affects preview height and PNG export area)
+  const [aspectRatio, setAspectRatio] = useState<string>("auto");
 
   const chartRef = useRef<HTMLDivElement>(null);
   const sorted = useMemo(() => [...data].sort((a, b) => a.x - b.x), [data]);
@@ -123,6 +125,8 @@ export default function App() {
               setShowRefLine={setShowRefLine}
               refY={refY}
               setRefY={setRefY}
+              aspectRatio={aspectRatio}
+              setAspectRatio={setAspectRatio}
             />
 
             {/* Report meta & presets */}
@@ -134,9 +138,7 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.instrument}
-                    onChange={(e) =>
-                      setMeta({ ...meta, instrument: e.target.value })
-                    }
+                    onChange={(e) => setMeta({ ...meta, instrument: e.target.value })}
                   />
                 </label>
                 <label className="flex flex-col">
@@ -144,9 +146,7 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.method}
-                    onChange={(e) =>
-                      setMeta({ ...meta, method: e.target.value })
-                    }
+                    onChange={(e) => setMeta({ ...meta, method: e.target.value })}
                   />
                 </label>
                 <label className="flex flex-col">
@@ -154,9 +154,7 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.sampleId}
-                    onChange={(e) =>
-                      setMeta({ ...meta, sampleId: e.target.value })
-                    }
+                    onChange={(e) => setMeta({ ...meta, sampleId: e.target.value })}
                   />
                 </label>
                 <label className="flex flex-col">
@@ -164,9 +162,7 @@ export default function App() {
                   <input
                     className="mt-1 p-2 border rounded bg-transparent"
                     value={meta.analyst}
-                    onChange={(e) =>
-                      setMeta({ ...meta, analyst: e.target.value })
-                    }
+                    onChange={(e) => setMeta({ ...meta, analyst: e.target.value })}
                   />
                 </label>
               </div>
@@ -211,22 +207,13 @@ export default function App() {
           </div>
 
           {/* Right chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-8 space-y-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-8 space-y-4">
             <div className="panel p-4 flex items-center justify-between">
               <h3 className="heading">Preview & Export</h3>
               <div className="flex gap-2">
                 <button
                   className="btn btn-primary"
-                  onClick={() =>
-                    exportNodePNG(
-                      chartRef.current!,
-                      `${title.replace(/\s+/g, "_")}.png`
-                    )
-                  }
+                  onClick={() => exportNodePNG(chartRef.current!, `${title.replace(/\s+/g, "_")}.png`)}
                 >
                   Export PNG
                 </button>
@@ -245,6 +232,7 @@ export default function App() {
               showRefLine={showRefLine}
               refY={refY}
               containerRef={chartRef}
+              aspectRatio={aspectRatio}
             />
 
             <div className="text-xs opacity-70 p-2 text-center">
